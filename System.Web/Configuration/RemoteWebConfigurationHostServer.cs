@@ -131,12 +131,14 @@ namespace System.Web.Configuration {
 
             /////////////////////////////////////////////////////////////////////
             // Step 4: Move the temp filt to the actual file
+#if !MONO
             if (!UnsafeNativeMethods.MoveFileEx(tempFile, fileName, MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
                 try {
                     File.Delete(tempFile);
                 } catch { }
                 Marshal.ThrowExceptionForHR(Marshal.GetHRForLastWin32Error());
             }
+#endif
 
             /////////////////////////////////////////////////////////////////////
             // Step 5: Set the attributes of the file
@@ -244,6 +246,7 @@ namespace System.Web.Configuration {
         public void GetFileDetails(string name, out bool exists, out long size, out long createDate, out long lastWriteDate) {
             if (!name.ToLowerInvariant().EndsWith(".config", StringComparison.Ordinal))
                 throw new Exception(SR.GetString(SR.Can_not_access_files_other_than_config));
+#if !MONO
             UnsafeNativeMethods.WIN32_FILE_ATTRIBUTE_DATA data;
             if (UnsafeNativeMethods.GetFileAttributesEx(name, UnsafeNativeMethods.GetFileExInfoStandard, out data) && (data.fileAttributes & (int)FileAttributes.Directory) == 0) {
                 exists = true;
@@ -251,11 +254,15 @@ namespace System.Web.Configuration {
                 createDate = (((long)data.ftCreationTimeHigh) << 32) | ((long)data.ftCreationTimeLow);
                 lastWriteDate = (((long)data.ftLastWriteTimeHigh) << 32) | ((long)data.ftLastWriteTimeLow);
             } else {
+#else
                 exists = false;
                 size = 0;
                 createDate = 0;
                 lastWriteDate = 0;
+#endif
+#if !MONO
             }
+#endif
         }
 
         private static string GetRandomFileExt() {

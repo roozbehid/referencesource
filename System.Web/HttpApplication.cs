@@ -34,8 +34,9 @@ namespace System.Web {
     using System.Web.SessionState;
     using System.Web.UI;
     using System.Web.Util;
+#if !MONO
     using IIS = System.Web.Hosting.UnsafeIISMethods;
-
+#endif
 
     //
     // Async EventHandler support
@@ -1283,9 +1284,13 @@ namespace System.Web {
                     return handler;
                 }
 
+#if MONO
+                HttpHandlerAction mapping = new HttpHandlerAction("*.aspx", "System.Web.UI.PageHandlerFactory", "GET,HEAD,POST,DEBUG");
+                mapping.InitValidateInternal();
+#else
                 // Map new handler
                 HttpHandlerAction mapping = GetHandlerMapping(context, requestType, path, useAppConfig);
-
+#endif
                 // If a page developer has removed the default mappings with <httpHandlers><clear>
                 // without replacing them then we need to give a more descriptive error than
                 // a null parameter exception.
@@ -1918,7 +1923,7 @@ namespace System.Web {
                         + ", post_rq_notify=" + postRequestNotifications
                         + ", preconditon=" + modulePrecondition + "\r\n");
 #endif
-
+#if !MONO
             int result = UnsafeIISMethods.MgdRegisterEventSubscription(appContext,
                                                                        moduleName,
                                                                        requestNotifications,
@@ -1931,6 +1936,7 @@ namespace System.Web {
             if(result < 0) {
                 throw new HttpException(SR.GetString(SR.Failed_Pipeline_Subscription, moduleName));
             }
+#endif
         }
 
 
@@ -2221,14 +2227,14 @@ namespace System.Web {
         }
 
         private void InitModules() {
-            HttpModulesSection pconfig = RuntimeConfig.GetAppConfig().HttpModules;
+          //  HttpModulesSection pconfig = RuntimeConfig.GetAppConfig().HttpModules;
 
             // get the static list, then add the dynamic members
-            HttpModuleCollection moduleCollection = pconfig.CreateModules();
-            HttpModuleCollection dynamicModules = CreateDynamicModules();
+            //HttpModuleCollection moduleCollection = pconfig.CreateModules();
+            //HttpModuleCollection dynamicModules = CreateDynamicModules();
 
-            moduleCollection.AppendCollection(dynamicModules);
-            _moduleCollection = moduleCollection; // don't assign until all ops have succeeded
+            //moduleCollection.AppendCollection(dynamicModules);
+            _moduleCollection = new HttpModuleCollection ();// moduleCollection; // don't assign until all ops have succeeded
 
             InitModulesCommon();
         }
@@ -2504,9 +2510,13 @@ namespace System.Web {
         //
 
         private void InitAppLevelCulture() {
+#if MONO
+            return;
+#endif
+
             GlobalizationSection globConfig = RuntimeConfig.GetAppConfig().Globalization;
-            string culture = globConfig.Culture;
-            string uiCulture = globConfig.UICulture;
+			string culture = globConfig.Culture;
+			string uiCulture = globConfig.UICulture;
             if (!String.IsNullOrEmpty(culture)) {
                 if (StringUtil.StringStartsWithIgnoreCase(culture, AutoCulture)) {
                     _appLevelAutoCulture = true;
@@ -2666,7 +2676,9 @@ namespace System.Web {
                    HttpRuntime.InitializationException == null && 
                    _context.FirstRequest && 
                    _context.Error == null) {
+#if !MONO
                         UnsafeNativeMethods.EndPrefetchActivity((uint)HttpRuntime.AppDomainAppId.GetHashCode());
+#endif
                 }
             }
             RecycleHandlers();
@@ -2735,13 +2747,16 @@ namespace System.Web {
             int cBstrModulePrecondition = 0;
             try {
                 int count = 0;
+#if !MONO
                 int result = UnsafeIISMethods.MgdGetModuleCollection(IntPtr.Zero, appContext, out pModuleCollection, out count);
                 if (result < 0) {
                     throw new HttpException(SR.GetString(SR.Cant_Read_Native_Modules, result.ToString("X8", CultureInfo.InvariantCulture)));
                 }
+#endif
                 moduleList = new List<ModuleConfigurationInfo>(count);
 
                 for (uint index = 0; index < count; index++) {
+#if !MONO
                     result = UnsafeIISMethods.MgdGetNextModule(pModuleCollection, ref index,
                                                                out pBstrModuleName, out cBstrModuleName,
                                                                out pBstrModuleType, out cBstrModuleType,
@@ -2749,6 +2764,7 @@ namespace System.Web {
                     if (result < 0) {
                         throw new HttpException(SR.GetString(SR.Cant_Read_Native_Modules, result.ToString("X8", CultureInfo.InvariantCulture)));
                     }
+#endif
                     string moduleName = (cBstrModuleName > 0) ? StringUtil.StringFromWCharPtr(pBstrModuleName, cBstrModuleName) : null;
                     string moduleType = (cBstrModuleType > 0) ? StringUtil.StringFromWCharPtr(pBstrModuleType, cBstrModuleType) : null;
                     string modulePrecondition = (cBstrModulePrecondition > 0) ? StringUtil.StringFromWCharPtr(pBstrModulePrecondition, cBstrModulePrecondition) : String.Empty;
@@ -3656,8 +3672,8 @@ namespace System.Web {
                 HttpApplication app = _application;
 
                 bool urlMappingsEnabled = false;
-                UrlMappingsSection urlMappings = RuntimeConfig.GetConfig().UrlMappings;
-                urlMappingsEnabled = urlMappings.IsEnabled && ( urlMappings.UrlMappings.Count > 0 );
+                //UrlMappingsSection urlMappings = RuntimeConfig.GetConfig().UrlMappings;
+                //urlMappingsEnabled = urlMappings.IsEnabled && ( urlMappings.UrlMappings.Count > 0 );
 
                 steps.Add(new ValidateRequestExecutionStep(app));
                 steps.Add(new ValidatePathExecutionStep(app));
@@ -3705,7 +3721,7 @@ namespace System.Web {
             }
 
             // This attribute prevents undesirable 'just-my-code' debugging behavior (VSWhidbey 404406/VSWhidbey 609188)
-            [System.Diagnostics.DebuggerStepperBoundaryAttribute]
+            //[System.Diagnostics.DebuggerStepperBoundaryAttribute]
             internal override void ResumeSteps(Exception error) {
                 bool appCompleted = false;
                 bool stepCompletedSynchronously = true;
@@ -4016,7 +4032,11 @@ namespace System.Web {
                                     }
 
                                     // [....] case (we might be able to stay in managed code and execute another notification)
-                                    if (needToFinishRequest || UnsafeIISMethods.MgdGetNextNotification(wr.RequestContext, RequestNotificationStatus.Continue) != 1) {
+#if MONO
+                                    if (needToFinishRequest) {
+#else
+                                    if (needToFinishRequest) || UnsafeIISMethods.MgdGetNextNotification(wr.RequestContext, RequestNotificationStatus.Continue) != 1) {
+#endif
                                         isSynchronousCompletion = true;
                                         needToComplete = true;
                                         break;
@@ -4025,9 +4045,9 @@ namespace System.Web {
                                     int currentModuleIndex = 0;
                                     bool isPostNotification = false;
                                     int currentNotification = 0;
-
+#if !MONO
                                     UnsafeIISMethods.MgdGetCurrentNotificationInfo(wr.RequestContext, out currentModuleIndex, out isPostNotification, out currentNotification);
-
+#endif
                                     // setup the HttpContext for this event/module combo
                                     context.CurrentModuleIndex = currentModuleIndex;
                                     context.IsPostNotification = isPostNotification;

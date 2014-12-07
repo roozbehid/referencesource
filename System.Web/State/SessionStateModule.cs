@@ -226,9 +226,13 @@ namespace System.Web.SessionState {
         TimeSpan                        _rqExecutionTimeout;
         bool                            _rqAddedCookie;
         SessionStateActions             _rqActionFlags;
+#if !MONO
         ImpersonationContext            _rqIctx;
+#endif
         internal int                    _rqChangeImpersonationRefCount;
+#if !MONO
         ImpersonationContext            _rqTimerThreadImpersonationIctx;
+#endif
         bool                            _rqSupportSessionIdReissue;
 
         /// <devdoc>
@@ -352,11 +356,15 @@ namespace System.Web.SessionState {
 
 #if !FEATURE_PAL // FEATURE_PAL does not enable out of proc session state
                 case SessionStateMode.StateServer:
+#if !MONO
                     if (HttpRuntime.UseIntegratedPipeline) {
                         s_canSkipEndRequestCall = true;
                     }
                     _store = new OutOfProcSessionStateStore();
                     ((OutOfProcSessionStateStore)_store).Initialize(null, null, _partitionResolver);
+#else
+                    throw new NotImplementedException("Not implemented on Mono");
+#endif
                     break;
 
                 case SessionStateMode.SQLServer:
@@ -477,7 +485,9 @@ namespace System.Web.SessionState {
         }
 
         void ResetPerRequestFields() {
+#if !MONO
             Debug.Assert(_rqIctx == null, "_rqIctx == null");
+#endif
             Debug.Assert(_rqChangeImpersonationRefCount == 0, "_rqChangeImpersonationRefCount == 0");
 
             _rqSessionState = null;
@@ -497,9 +507,13 @@ namespace System.Web.SessionState {
             _rqAddedCookie = false;
             _rqIdNew = false;
             _rqActionFlags = 0;
+#if !MONO
             _rqIctx = null;
+#endif
             _rqChangeImpersonationRefCount = 0;
+#if !MONO
             _rqTimerThreadImpersonationIctx = null;
+#endif
             _rqSupportSessionIdReissue = false;
         }
 
@@ -531,7 +545,7 @@ namespace System.Web.SessionState {
             // Session_OnStart for ASPCOMPAT pages has to be raised from an STA thread
             // 
             if (HttpRuntime.ApartmentThreading || _rqContext.InAspCompatMode) {
-#if !FEATURE_PAL // FEATURE_PAL does not enable COM
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable COM
                 AspCompatApplicationStep.RaiseAspCompatEvent(
                     _rqContext,
                     _rqContext.ApplicationInstance,
@@ -1055,7 +1069,7 @@ namespace System.Web.SessionState {
         }
 
         void ChangeImpersonation(HttpContext context, bool timerThread) {
-#if !FEATURE_PAL // FEATURE_PAL doesn't enable impersonation
+#if !FEATURE_PAL && !MONO // FEATURE_PAL doesn't enable impersonation
             _rqChangeImpersonationRefCount++;
 
             if (_ignoreImpersonation) {
@@ -1104,6 +1118,7 @@ namespace System.Web.SessionState {
             _rqChangeImpersonationRefCount--;
 
             if (_rqChangeImpersonationRefCount == 0) {
+#if !MONO
                 Debug.Assert(!(_rqIctx != null && _rqTimerThreadImpersonationIctx != null), "Should not have mixed mode of impersonation");
 
                 if (_rqIctx != null) {
@@ -1116,6 +1131,7 @@ namespace System.Web.SessionState {
                     _rqTimerThreadImpersonationIctx.Undo();
                     _rqTimerThreadImpersonationIctx = null;
                 }
+#endif
             }
         }
 

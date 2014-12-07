@@ -99,10 +99,12 @@ namespace System.Web.Management {
             // In order to not overflow the eventlog, we only log one exception per provider instance.
             if (Interlocked.CompareExchange( ref _exceptionLogged, 1, 0) == 0) {
                 // Log all errors in eventlog
+#if !MONO
                 UnsafeNativeMethods.LogWebeventProviderFailure(
                                         HttpRuntime.AppDomainAppVirtualPath,
                                         Name,
                                         e.ToString());
+#endif
             }
         }
     }
@@ -899,7 +901,7 @@ namespace System.Web.Management {
             // times during shutdown, after the cache has been disposed.  To improve 
             // shutdown performance, skip the cache when it is disposed.
             if (cacheInternal.IsDisposed) {
-                return SR.Resources.GetString(key, CultureInfo.InstalledUICulture);
+                return SR.GetString(key, CultureInfo.InstalledUICulture);
             }
 
             string s;
@@ -911,7 +913,7 @@ namespace System.Web.Management {
                 return s;
             }
 
-            s = SR.Resources.GetString(key, CultureInfo.InstalledUICulture);
+            s = SR.GetString(key, CultureInfo.InstalledUICulture);
             if (s != null) {
                 cacheInternal.UtcInsert(cacheKey, s);
             }
@@ -1831,6 +1833,7 @@ namespace System.Web.Management {
         string  _accountName;
 
         internal WebProcessInformation() {
+#if !MONO
             // Can't use Process.ProcessName because it requires the running
             // account to be part of the Performance Monitor Users group.
             StringBuilder buf = new StringBuilder(256);
@@ -1849,6 +1852,7 @@ namespace System.Web.Management {
 
             _processId = SafeNativeMethods.GetCurrentProcessId() ;
             _accountName = HttpRuntime.WpUserId;
+#endif
         }
 
         public int ProcessID { get { return _processId; } }
