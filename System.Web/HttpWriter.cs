@@ -20,8 +20,9 @@ namespace System.Web {
     using System.Threading;
     using System.Web.Util;
     using System.Web.Hosting;
-
+#if !MONO
     using IIS = System.Web.Hosting.UnsafeIISMethods;
+#endif
 
     //
     //  HttpWriter buffer recycling support
@@ -89,6 +90,15 @@ namespace System.Web {
         private static UbyteBufferAllocator s_Allocator =
         new UbyteBufferAllocator(BufferingParams.OUTPUT_BUFFER_SIZE,
                                  BufferingParams.MAX_FREE_OUTPUT_BUFFERS);
+
+		#if MONO
+		internal HttpResponseBufferElement() {
+		_free=_size=1024*10;
+		_data = new byte[_size];
+		_recycle=false;
+		}
+		#endif
+
 
 
         /*
@@ -168,7 +178,7 @@ namespace System.Web {
         }
     }
 
-#if !FEATURE_PAL // FEATURE_PAL does not enable IIS-based hosting features
+#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable IIS-based hosting features
     /*
      * Unmanaged memory response buffer
      */
@@ -900,8 +910,9 @@ namespace System.Web {
             }
         }
 
+
         private HttpBaseMemoryResponseBufferElement CreateNewMemoryBufferElement() {
-            return new HttpResponseUnmanagedBufferElement(); /* using unmanaged buffers */
+            return new HttpResponseBufferElement(); /* using unmanaged buffers */
         }
 
     internal void DisposeIntegratedBuffers() {
@@ -1026,7 +1037,7 @@ namespace System.Web {
                 _buffers.Add(new HttpResponseBufferElement(data, size));
                 return;
             }
-
+			
             // do other buffers if needed
             while (size > 0) {
                 _lastBuffer = CreateNewMemoryBufferElement();
@@ -1055,6 +1066,7 @@ namespace System.Web {
                 offset += n;
             }
 
+#if !MONO
             // do other buffers if needed
             while (size > 0) {
                 _lastBuffer = CreateNewMemoryBufferElement();
@@ -1063,6 +1075,7 @@ namespace System.Web {
                 offset += n;
                 size -= n;
             }
+#endif
         }
 
         //

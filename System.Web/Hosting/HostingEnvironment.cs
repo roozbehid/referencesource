@@ -11,7 +11,9 @@ namespace System.Web.Hosting {
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
+#if !MONO || CACHE_DEP
     using System.Runtime.Caching;
+#endif
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Runtime.Remoting;
@@ -122,8 +124,9 @@ namespace System.Web.Hosting {
         private String _shutDownStack;
 
         private int _inTrimCache;
+#if !MONO || CACHE_DEP
         private ObjectCacheHost _objectCacheHost;
-
+#endif
         // table of well know objects keyed by type
         private Hashtable _wellKnownObjects = new Hashtable();
 
@@ -171,9 +174,10 @@ namespace System.Web.Hosting {
         [SecurityPermission(SecurityAction.Demand, Unrestricted = true)]
         public HostingEnvironment() {
             if (_theHostingEnvironment != null)
-                throw new InvalidOperationException(SR.GetString(SR.Only_1_HostEnv));
+                throw new InvalidOperationException (SR.GetString (SR.Only_1_HostEnv));
 
             // remember singleton HostingEnvironment in a static
+            Console.WriteLine ("Current AppDomain-ID: " + AppDomain.CurrentDomain.Id);
             _theHostingEnvironment = this;
 
             // start watching for app domain unloading
@@ -189,9 +193,11 @@ namespace System.Web.Hosting {
                 // do nothing if we're shutting down
                 if (!_shutdownInitiated) {
                     trimmedOrExpired = HttpRuntime.CacheInternal.TrimCache(percent);
+#if !MONO || CACHE_DEP
                     if (_objectCacheHost != null && !_shutdownInitiated) {
                         trimmedOrExpired += _objectCacheHost.TrimCache(percent);
                     }
+#endif
                 }
                 return trimmedOrExpired;
             }
@@ -237,7 +243,9 @@ namespace System.Web.Hosting {
 
             // free the config access token
             if (_configToken != IntPtr.Zero) {
+#if !MONO
                 UnsafeNativeMethods.CloseHandle(_configToken);
+#endif
                 _configToken = IntPtr.Zero;
             }
         }
@@ -298,15 +306,18 @@ namespace System.Web.Hosting {
                     _functions = Misc.CreateLocalSupportFunctions(proxyFunctions);
                 }
             }
-
+#if MONO  // TODO: investigate why this is needed
+            HttpRuntime.RefreshData ();
+#endif
+            Console.WriteLine ("HostingEnvironment: HttpRuntime.AppDomainAppId:" + HttpRuntime.AppDomainAppId);
             _appId = HttpRuntime.AppDomainAppId;
             _appVirtualPath = HttpRuntime.AppDomainAppVirtualPathObject;
             _appPhysicalPath = HttpRuntime.AppDomainAppPathInternal;
             _appHost = appHost;
-
             _configMapPath = configMapPathFactory.Create(_appVirtualPath.VirtualPathString, _appPhysicalPath);
-            HttpConfigurationSystem.EnsureInit(_configMapPath, true, false);
-
+#if !MONO
+             HttpConfigurationSystem.EnsureInit(_configMapPath, true, false); // TODO: REENABLE THIS!!
+#endif
             // attempt to cache and use IConfigMapPath2 provider
             // which supports VirtualPath's to save on conversions
             _configMapPath2 = _configMapPath as IConfigMapPath2;
@@ -371,12 +382,14 @@ namespace System.Web.Hosting {
         }
 
         private void InitializeObjectCacheHostPrivate() {
+#if !MONO || CACHE_DEP
             // set ObjectCacheHost if the Host is not already set
             if (ObjectCache.Host == null) {
                 ObjectCacheHost objectCacheHost = new ObjectCacheHost();
                 ObjectCache.Host = objectCacheHost;
                 _objectCacheHost = objectCacheHost;
             }
+#endif
         }
 
         internal static void InitializeObjectCacheHost() {
@@ -1044,7 +1057,7 @@ namespace System.Web.Hosting {
                 // and the other way -- no extra '\\' in physical if virtual didn't have it.
                 if (virtualPath.HasTrailingSlash) {
                     if (!UrlPath.PathEndsWithExtraSlash(result) && !UrlPath.PathIsDriveRoot(result))
-                        result = result + "\\";
+                        result = result + Path.DirectorySeparatorChar;
                 }
                 else {
                     if (UrlPath.PathEndsWithExtraSlash(result) && !UrlPath.PathIsDriveRoot(result))
@@ -1806,13 +1819,18 @@ namespace System.Web.Hosting {
                 if (!HttpRuntime.UseIntegratedPipeline) {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_Integrated_Mode));
                 }
+#if !MONO
                 return UnsafeIISMethods.MgdGetMaxConcurrentRequestsPerCPU();
+#else
+                return 0;
+#endif
             }
             [SecurityPermission(SecurityAction.Demand, Unrestricted = true)]
             set {
                 if (!HttpRuntime.UseIntegratedPipeline) {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_Integrated_Mode));
                 }
+#if !MONO
                 int hr = UnsafeIISMethods.MgdSetMaxConcurrentRequestsPerCPU(value);
                 switch (hr) {
                     case HResults.S_FALSE:
@@ -1823,6 +1841,7 @@ namespace System.Web.Hosting {
                         // The value must be greater than zero.  A value of zero would disable the feature, but this can only be done via configuration.
                         throw new ArgumentException(SR.GetString(SR.Invalid_queue_limit));
                 }
+#endif
             }
         }
 
@@ -1833,13 +1852,18 @@ namespace System.Web.Hosting {
                 if (!HttpRuntime.UseIntegratedPipeline) {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_Integrated_Mode));
                 }
+#if !MONO
                 return UnsafeIISMethods.MgdGetMaxConcurrentThreadsPerCPU();
+#else
+                return 0;
+#endif
             }
             [SecurityPermission(SecurityAction.Demand, Unrestricted = true)]
             set {
                 if (!HttpRuntime.UseIntegratedPipeline) {
                     throw new PlatformNotSupportedException(SR.GetString(SR.Requires_Iis_Integrated_Mode));
                 }
+#if !MONO
                 int hr = UnsafeIISMethods.MgdSetMaxConcurrentThreadsPerCPU(value);
                 switch (hr) {
                     case HResults.S_FALSE:
@@ -1850,6 +1874,7 @@ namespace System.Web.Hosting {
                         // The value must be greater than zero.  A value of zero would disable the feature, but this can only be done via configuration.
                         throw new ArgumentException(SR.GetString(SR.Invalid_queue_limit));
                 }
+#endif
             }
         }
 

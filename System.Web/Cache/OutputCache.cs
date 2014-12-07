@@ -341,12 +341,14 @@ namespace System.Web.Caching {
             DependencyCacheEntry dce = value as DependencyCacheEntry;
             if (dce.KernelCacheEntryKey != null) {
                 // invalidate kernel cache entry
+#if !MONO
                 if (HttpRuntime.UseIntegratedPipeline) {
                     UnsafeIISMethods.MgdFlushKernelCache(dce.KernelCacheEntryKey);
                 }
                 else {
                     UnsafeNativeMethods.InvalidateKernelCache(dce.KernelCacheEntryKey);
                 }
+#endif
             }
             if (reason == CacheItemRemovedReason.DependencyChanged) {
                 if (dce.OutputCacheEntryKey != null) {
@@ -393,12 +395,14 @@ namespace System.Web.Caching {
                 // if the entry was re-inserted, don't remove kernel entry since it will be updated
                 if (kernelCacheUrl != null && HttpRuntime.CacheInternal.Get(key) == null) {
                     // invalidate kernel cache entry
+#if !MONO
                     if (HttpRuntime.UseIntegratedPipeline) {
                         UnsafeIISMethods.MgdFlushKernelCache(kernelCacheUrl);
                     }
                     else {
                         UnsafeNativeMethods.InvalidateKernelCache(kernelCacheUrl);
                     }
+#endif
                 }
             }
         }

@@ -770,12 +770,15 @@ namespace System.Web.Caching {
         // cache usage into System.Runtime.Caching.dll.  This allows
         // us to test System.Runtime.Caching.dll with all existing
         // ASP.NET test cases (functional, perf, and stress).
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || MONO
         private static bool _useMemoryCache;
         private static volatile bool _useMemoryCacheInited;
         internal static bool UseMemoryCache {
             get {
                 if (!_useMemoryCacheInited) {
+#if MONO
+                    _useMemoryCache = true;
+#else
                     RegistryKey regKey = null;
                     try {
                         regKey = Registry.LocalMachine.OpenSubKey("Software\\Microsoft\\ASP.NET");
@@ -790,6 +793,7 @@ namespace System.Web.Caching {
                             regKey.Close();
                         }
                     }
+#endif
                     _useMemoryCacheInited = true;
                 }
                 return _useMemoryCache;
@@ -801,10 +805,10 @@ namespace System.Web.Caching {
         static internal CacheInternal Create() {
             CacheCommon cacheCommon = new CacheCommon();
             CacheInternal cacheInternal;
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             if (UseMemoryCache) {
                 cacheInternal = new MemCache(cacheCommon);
-                cacheCommon.AddSRefTarget(cacheInternal);
+                //cacheCommon.AddSRefTarget(cacheInternal);
             }
             else {
 #endif
@@ -824,7 +828,7 @@ namespace System.Web.Caching {
                 else {
                     cacheInternal = new CacheMultiple(cacheCommon, numSubCaches);
                 }
-#if USE_MEMORY_CACHE
+#if USE_MEMORY_CACHE || (MONO && CACHE_DEP)
             }
 #endif
             cacheCommon.SetCacheInternal(cacheInternal);
@@ -1850,7 +1854,7 @@ namespace System.Web.Caching {
                     totalTrimmed = _usage.FlushUnderUsedItems(toTrim - trimmedOrExpired, ref publicEntriesTrimmed, ref ocEntriesTrimmed);
                     trimmedOrExpired += totalTrimmed;
                 }
-                
+
                 if (totalTrimmed > 0) {
                     // Update values for perfcounters
                     PerfCounters.IncrementCounterEx(AppPerfCounter.CACHE_TOTAL_TRIMS, totalTrimmed);
