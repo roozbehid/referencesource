@@ -74,7 +74,7 @@ namespace System.ComponentModel {
             return Description.GetHashCode();
         }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && false
         /// <internalonly/>
         /// <devdoc>
         /// </devdoc>

@@ -405,7 +405,7 @@ namespace System.ComponentModel {
         /// </devdoc>
         protected void InternalSort(IComparer sorter) {
             if (sorter == null) {
-                TypeDescriptor.SortDescriptorArray(this);
+                throw new NotImplementedException("TypeDescriptor.SortDescriptorArray not implemented");
             }
             else {
                 Array.Sort(events, sorter);

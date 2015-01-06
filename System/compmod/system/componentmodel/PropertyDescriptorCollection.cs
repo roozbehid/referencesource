@@ -233,7 +233,7 @@ namespace System.ComponentModel {
             Array.Copy(properties, 0, newProps, 0, propCount);
             properties = newProps;
         }
-
+        
         /// <devdoc>
         ///    <para>Gets the description of the property with the specified
         ///       name.</para>
@@ -259,21 +259,7 @@ namespace System.ComponentModel {
                 // the cache as we go.
                 //
                 for(int i = 0; i < propCount; i++) {
-                    
-                    if (ignoreCase) {
-                        if (String.Equals(properties[i].Name, name, StringComparison.OrdinalIgnoreCase)) {
-                            cachedFoundProperties[name] = properties[i];
-                            p = properties[i];
-                            break;
-                        }
-                    }
-                    else {
-                        if (properties[i].Name.Equals(name)) {
-                            cachedFoundProperties[name] = properties[i];
-                            p = properties[i];
-                            break;
-                        }
-                    }
+                    throw new NotImplementedException();
                 }
                 
                 return p;
@@ -399,12 +385,7 @@ namespace System.ComponentModel {
                         
                         // Found a matching property.  Here, we add it to our array.  We also
                         // mark it as null in our array list so we don't add it twice later.
-                        //
-                        if (currentProp != null && currentProp.Name.Equals(names[i])) {
-                            properties[foundCount++] = currentProp;
-                            propArrayList[j] = null;
-                            break;
-                        }
+                        throw new NotImplementedException();
                     }
                }
                 
@@ -430,7 +411,7 @@ namespace System.ComponentModel {
         /// </devdoc>
         protected void InternalSort(IComparer sorter) {
             if (sorter == null) {
-                TypeDescriptor.SortDescriptorArray(this);
+                throw new NotImplementedException("TypeDescriptor.SortDescriptorArray not implemented");
             }
             else {
                 Array.Sort(properties, sorter);
@@ -545,10 +526,7 @@ namespace System.ComponentModel {
                 }
                 else if (key is string) {
                     for (int i = 0; i < propCount; i++) {
-                        if (properties[i].Name.Equals((string)key)) {
-                            index = i;
-                            break;
-                        }
+                        throw new NotImplementedException();
                     }
                 }
                 else {
@@ -573,7 +551,7 @@ namespace System.ComponentModel {
             get {
                 string[] keys = new string[propCount];
                 for (int i = 0; i < propCount ;i++) {
-                    keys[i] = properties[i].Name;
+                    throw new NotImplementedException();
                 }
                 return keys;
             }
@@ -700,19 +678,19 @@ namespace System.ComponentModel {
             public DictionaryEntry Entry {
                 get {
                     PropertyDescriptor curProp = owner[index];
-                    return new DictionaryEntry(curProp.Name, curProp);
+                    throw new NotImplementedException();
                 }
             }
 
             public object Key {
                 get {
-                    return owner[index].Name;
+                    throw new NotImplementedException();
                 }
             }
 
             public object Value {
                 get {
-                    return owner[index].Name;
+                    throw new NotImplementedException();
                 }
             }
 

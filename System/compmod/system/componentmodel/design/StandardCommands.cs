@@ -10,7 +10,6 @@ namespace System.ComponentModel.Design {
     using System;
     using System.ComponentModel;
     using System.Diagnostics;
-    using System.Runtime.Remoting;
     using System.Security.Permissions;
     using System.Threading;
 

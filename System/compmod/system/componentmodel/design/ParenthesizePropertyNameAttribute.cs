@@ -74,12 +74,5 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-
-        /// <devdoc>
-        /// <para>Gets a value indicating whether this attribute is set to <see langword='true'/> by default.</para>
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return this.Equals(Default);
-        }
     }
 }

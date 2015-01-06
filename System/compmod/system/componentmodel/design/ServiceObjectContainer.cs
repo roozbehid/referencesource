@@ -11,6 +11,7 @@ namespace System.ComponentModel.Design {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Reflection;
     using System.Security.Permissions;
 
     /// <devdoc>
@@ -92,9 +93,7 @@ namespace System.ComponentModel.Design {
             if (promote) {
                 IServiceContainer container = Container;
                 if (container != null) {
-                    Debug.Indent();
                     Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Promoting to container");
-                    Debug.Unindent();
                     container.AddService(serviceType, serviceInstance, promote);
                     return;
                 }
@@ -105,7 +104,7 @@ namespace System.ComponentModel.Design {
             //
             if (serviceType == null) throw new ArgumentNullException("serviceType");
             if (serviceInstance == null) throw new ArgumentNullException("serviceInstance");
-            if (!(serviceInstance is ServiceCreatorCallback) && !serviceInstance.GetType().IsCOMObject && !serviceType.IsAssignableFrom(serviceInstance.GetType())) {
+            if (!(serviceInstance is ServiceCreatorCallback) && !serviceType.GetTypeInfo().IsAssignableFrom(serviceInstance.GetType().GetTypeInfo())) {
                 throw new ArgumentException(SR.GetString(SR.ErrorInvalidServiceInstance, serviceType.FullName));
             }
             
@@ -131,9 +130,7 @@ namespace System.ComponentModel.Design {
             if (promote) {
                 IServiceContainer container = Container;
                 if (container != null) {
-                    Debug.Indent();
                     Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Promoting to container");
-                    Debug.Unindent();
                     container.AddService(serviceType, callback, promote);
                     return;
                 }
@@ -185,14 +182,13 @@ namespace System.ComponentModel.Design {
             object service = null;
             
             Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Searching for service " + serviceType.Name);
-            Debug.Indent();
             
             // Try locally.  We first test for services we
             // implement and then look in our service collection.
             //
             Type[] defaults = DefaultServices;
             for (int idx = 0; idx < defaults.Length; idx++) {
-                if (serviceType.IsEquivalentTo(defaults[idx])) {
+                if (serviceType.Equals(defaults[idx])) {
                     service = this;
                     break;
                 }
@@ -208,7 +204,7 @@ namespace System.ComponentModel.Design {
                 Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Encountered a callback. Invoking it");
                 service = ((ServiceCreatorCallback)service)(this, serviceType);
                 Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Callback return object: " + (service == null ? "(null)" : service.ToString()));
-                if (service != null && !service.GetType().IsCOMObject && !serviceType.IsAssignableFrom(service.GetType())) {
+                if (service != null && !serviceType.IsAssignableFrom(service.GetType())) {
                     // Callback passed us a bad service.  NULL it, rather than throwing an exception.
                     // Callers here do not need to be prepared to handle bad callback implemetations.
                     Debug.Fail("Object " + service.GetType().Name + " was returned from a service creator callback but it does not implement the registered type of " + serviceType.Name);
@@ -234,7 +230,6 @@ namespace System.ComponentModel.Design {
                 Debug.WriteLine("******************************************");
             }
             #endif
-            Debug.Unindent();
             
             return service;
         }
@@ -254,9 +249,7 @@ namespace System.ComponentModel.Design {
             if (promote) {
                 IServiceContainer container = Container;
                 if (container != null) {
-                    Debug.Indent();
                     Debug.WriteLineIf(TRACESERVICE.TraceVerbose, "Invoking parent container");
-                    Debug.Unindent();
                     container.RemoveService(serviceType, promote);
                     return;
                 }
@@ -282,7 +275,7 @@ namespace System.ComponentModel.Design {
                 #region IEqualityComparer<Type> Members
 
                 public bool Equals(Type x, Type y) {
-                    return x.IsEquivalentTo(y);
+                    return x.Equals(y);
                 }
 
                 public int GetHashCode(Type obj) {

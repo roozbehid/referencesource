@@ -80,14 +80,5 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             return typeof(DesignTimeVisibleAttribute).GetHashCode() ^ (visible ? -1 : 0);
         }
-        
-#if !SILVERLIGHT
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return (this.Visible == Default.Visible);
-        }
-#endif
     }
 }

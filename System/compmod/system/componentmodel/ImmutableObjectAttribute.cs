@@ -71,14 +71,6 @@ namespace System.ComponentModel {
          public override int GetHashCode() {
              return base.GetHashCode();
          }
-
-         /// <internalonly/>
-         /// <devdoc>
-         /// </devdoc>
-         public override bool IsDefaultAttribute() {
-            return (this.Equals(Default));
-         }
-
     }
 }
 

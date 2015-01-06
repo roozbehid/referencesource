@@ -130,7 +130,7 @@ namespace System.ComponentModel {
             return bindable.GetHashCode();
         }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && false
         /// <devdoc>
         /// </devdoc>
         /// <internalonly/>

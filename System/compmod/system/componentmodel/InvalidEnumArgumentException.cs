@@ -53,12 +53,5 @@ namespace System.ComponentModel {
                                 invalidValue.ToString(CultureInfo.CurrentCulture),
                                 enumClass.Name), argumentName) {
         }
-
-        /// <devdoc>
-        ///     Need this constructor since Exception implements ISerializable. We don't have any fields,
-        ///     so just forward this to base.
-        /// </devdoc>
-        protected InvalidEnumArgumentException(SerializationInfo info, StreamingContext context) : base(info, context) {
-        }
     }
 }

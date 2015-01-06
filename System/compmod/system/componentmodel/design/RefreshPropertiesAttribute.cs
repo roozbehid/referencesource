@@ -84,13 +84,6 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-
-        /// <devdoc>
-        ///    <para>Gets a value indicating whether the current attribute is the default.</para>
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return this.Equals(Default);
-        }
     }
 }
 

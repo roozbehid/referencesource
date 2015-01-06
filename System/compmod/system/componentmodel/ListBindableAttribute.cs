@@ -79,13 +79,5 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-
-
-        /// <devdoc>
-        ///    <para>[To be supplied.]</para>
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return (this.Equals(Default) || isDefault);
-        }
     }
 }

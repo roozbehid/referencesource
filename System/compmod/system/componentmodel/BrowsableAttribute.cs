@@ -81,7 +81,7 @@ namespace System.ComponentModel {
             return browsable.GetHashCode();
         }
 
-#if !SILVERLIGHT
+#if !SILVERLIGHT && false
         /// <internalonly/>
         /// <devdoc>
         /// </devdoc>

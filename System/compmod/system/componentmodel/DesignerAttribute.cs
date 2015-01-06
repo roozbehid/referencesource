@@ -30,7 +30,7 @@ namespace System.ComponentModel {
         ///    </para>
         /// </devdoc>
         public DesignerAttribute(string designerTypeName) {
-            string temp = designerTypeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = designerTypeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + designerTypeName + " . Please remove the .dll extension");
             this.designerTypeName = designerTypeName;
             this.designerBaseTypeName = typeof(IDesigner).FullName;
@@ -54,7 +54,7 @@ namespace System.ComponentModel {
         ///    </para>
         /// </devdoc>
         public DesignerAttribute(string designerTypeName, string designerBaseTypeName) {
-            string temp = designerTypeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = designerTypeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + designerTypeName + " . Please remove the .dll extension");
             this.designerTypeName = designerTypeName;
             this.designerBaseTypeName = designerBaseTypeName;
@@ -67,7 +67,7 @@ namespace System.ComponentModel {
         ///    </para>
         /// </devdoc>
         public DesignerAttribute(string designerTypeName, Type designerBaseType) {
-            string temp = designerTypeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = designerTypeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + designerTypeName + " . Please remove the .dll extension");
             this.designerTypeName = designerTypeName;
             this.designerBaseTypeName = designerBaseType.AssemblyQualifiedName;
@@ -117,7 +117,7 @@ namespace System.ComponentModel {
         ///       this to include the type of the designer base type.
         ///    </para>
         /// </devdoc>
-        public override object TypeId {
+        public object TypeId {
             get {
                 if (typeId == null) {
                     string baseType = designerBaseTypeName;

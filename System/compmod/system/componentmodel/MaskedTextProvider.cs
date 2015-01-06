@@ -263,16 +263,6 @@ namespace System.ComponentModel
             //Neutral cultures cannot be queried for culture-specific information.
             if (culture.IsNeutralCulture)
             {
-                // find the first specific (non-neutral) culture that contains ----/region specific info.
-                foreach (CultureInfo tempCulture in CultureInfo.GetCultures(CultureTypes.SpecificCultures))
-                {
-                    if (culture.Equals(tempCulture.Parent))
-                    {
-                        this.culture = tempCulture;
-                        break;
-                    }
-                }
-
                 // Last resort use invariant culture.
                 if (this.culture == null)
                 {
@@ -347,12 +337,12 @@ namespace System.ComponentModel
                             break;
 
                         case ':':   // time separator.
-                            locSymbol = this.culture.DateTimeFormat.TimeSeparator;
+                            locSymbol = ":";
                             charType  = CharType.Separator;
                             break;
 
                         case '/':   // date separator.
-                            locSymbol = this.culture.DateTimeFormat.DateSeparator;
+                            locSymbol = "/";
                             charType  = CharType.Separator;
                             break;
 
@@ -522,7 +512,7 @@ namespace System.ComponentModel
                     this.AsciiOnly
                 };
 
-                clonedProvider = SecurityUtils.SecureCreateInstance(providerType, parameters) as MaskedTextProvider;
+                clonedProvider = Activator.CreateInstance(providerType, parameters) as MaskedTextProvider;
             }
 
             clonedProvider.ResetOnPrompt = false; 

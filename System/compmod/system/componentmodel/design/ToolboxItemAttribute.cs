@@ -40,15 +40,6 @@ namespace System.ComponentModel {
         ///    </para>
         /// </devdoc>
         public static readonly ToolboxItemAttribute None = new ToolboxItemAttribute(false);
-
-        /// <devdoc>
-        ///    <para>
-        ///       Gets whether the attribute is the default attribute.
-        ///    </para>
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return this.Equals(Default);
-        }
         
         /// <devdoc>
         ///    <para>
@@ -69,7 +60,7 @@ namespace System.ComponentModel {
         ///    </para>
         /// </devdoc>
         public ToolboxItemAttribute(string toolboxItemTypeName) {
-            string temp = toolboxItemTypeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = toolboxItemTypeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + toolboxItemTypeName + " . Please remove the .dll extension");
             this.toolboxItemTypeName = toolboxItemTypeName;
         }

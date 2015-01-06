@@ -94,7 +94,7 @@ namespace System.ComponentModel {
         ///       this to include the name of the category
         ///    </para>
         /// </devdoc>
-        public override object TypeId {
+        public object TypeId {
             get {
                 if (typeId == null) {
                     typeId = GetType().FullName + Category;
@@ -124,16 +124,6 @@ namespace System.ComponentModel {
         /// </devdoc>
         public override int GetHashCode() {
             return category.GetHashCode();
-        }
-
-        /// <devdoc>
-        /// </devdoc>
-        /// <devdoc>
-        /// </devdoc>
-        /// <internalonly/>
-        /// <internalonly/>
-        public override bool IsDefaultAttribute() {
-            return category.Equals(Default.Category);
         }
     }
 }

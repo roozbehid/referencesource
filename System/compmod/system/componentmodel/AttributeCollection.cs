@@ -122,7 +122,7 @@ namespace System.ComponentModel
                 bool match = false;
                 for (int existingIdx = 0; existingIdx < existing.Count; existingIdx++)
                 {
-                    if (newArray[existingIdx].TypeId.Equals(newAttributes[idx].TypeId))
+                    if (newArray[existingIdx].Equals(newAttributes[idx]))
                     {
                         match = true;
                         newArray[existingIdx] = newAttributes[idx];
@@ -310,48 +310,7 @@ namespace System.ComponentModel
         /// </devdoc>
         protected Attribute GetDefaultAttribute(Type attributeType)
         {
-            lock (internalSyncObject)
-            {
-                if (_defaultAttributes == null)
-                {
-                    _defaultAttributes = new Hashtable();
-                }
-
-                // If we have already encountered this, use what's in the
-                // table.
-                if (_defaultAttributes.ContainsKey(attributeType))
-                {
-                    return(Attribute)_defaultAttributes[attributeType];
-                }
-
-                Attribute attr = null;
-
-                // Nope, not in the table, so do the legwork to discover the default value.
-                Type reflect = TypeDescriptor.GetReflectionType(attributeType);
-                System.Reflection.FieldInfo field = reflect.GetField("Default", BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField);
-                if (field != null && field.IsStatic)
-                {
-                    attr = (Attribute)field.GetValue(null);
-                }
-                else
-                {
-                    ConstructorInfo ci = reflect.UnderlyingSystemType.GetConstructor(new Type[0]);
-                    if (ci != null)
-                    {
-                        attr = (Attribute)ci.Invoke(new object[0]);
-
-                        // If we successfully created, verify that it is the
-                        // default.  Attributes don't have to abide by this rule.
-                        if (!attr.IsDefaultAttribute())
-                        {
-                            attr = null;
-                        }
-                    }
-                }
-
-                _defaultAttributes[attributeType] = attr;
-                return attr;
-            }
+             throw new NotImplementedException();
         }
 
         /// <devdoc>
@@ -370,7 +329,7 @@ namespace System.ComponentModel
         {
             for (int i = 0; i < Attributes.Length; i++)
             {
-                if (Attributes[i].Match(attribute))
+                if (Attributes[i].Equals(attribute))
                 {
                     return true;
                 }

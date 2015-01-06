@@ -330,7 +330,7 @@ namespace System.ComponentModel {
 #endif
         }
         
-#if !SILVERLIGHT
+#if !SILVERLIGHT && false
         /// <devdoc>
         /// </devdoc>
         /// <devdoc>

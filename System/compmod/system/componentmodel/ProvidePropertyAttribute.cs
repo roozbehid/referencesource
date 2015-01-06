@@ -59,15 +59,6 @@ namespace System.ComponentModel {
             }
         }
 
-        /// <devdoc>
-        ///    <para>ProvidePropertyAttribute overrides this to include the type name and the property name</para>
-        /// </devdoc>
-        public override object TypeId {
-            get {
-                return GetType().FullName + propertyName;
-            }
-        }
-
         public override bool Equals(object obj) {
             if (obj == this) {
                 return true;

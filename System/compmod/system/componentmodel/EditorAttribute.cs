@@ -36,7 +36,7 @@ namespace System.ComponentModel {
         ///    name of the editor.</para>
         /// </devdoc>
         public EditorAttribute(string typeName, string baseTypeName) {
-            string temp = typeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = typeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + typeName + " . Please remove the .dll extension");
             this.typeName = typeName;
             this.baseTypeName = baseTypeName;
@@ -46,7 +46,7 @@ namespace System.ComponentModel {
         /// <para>Initializes a new instance of the <see cref='System.ComponentModel.EditorAttribute'/> class.</para>
         /// </devdoc>
         public EditorAttribute(string typeName, Type baseType) {
-            string temp = typeName.ToUpper(CultureInfo.InvariantCulture);
+            string temp = typeName.ToUpper();
             Debug.Assert(temp.IndexOf(".DLL") == -1, "Came across: " + typeName + " . Please remove the .dll extension");
             this.typeName = typeName;
             this.baseTypeName = baseType.AssemblyQualifiedName;
@@ -76,30 +76,6 @@ namespace System.ComponentModel {
         public string EditorTypeName {
             get {
                 return typeName;
-            }
-        }
-    
-        /// <internalonly/>
-        /// <devdoc>
-        ///    <para>
-        ///       This defines a unique ID for this attribute type. It is used
-        ///       by filtering algorithms to identify two attributes that are
-        ///       the same type. For most attributes, this just returns the
-        ///       Type instance for the attribute. EditorAttribute overrides
-        ///       this to include the type of the editor base type.
-        ///    </para>
-        /// </devdoc>
-        public override object TypeId {
-            get {
-                if (typeId == null) {
-                    string baseType = baseTypeName;
-                    int comma = baseType.IndexOf(',');
-                    if (comma != -1) {
-                        baseType = baseType.Substring(0, comma);
-                    }
-                    typeId = GetType().FullName + baseType;
-                }
-                return typeId;
             }
         }
 

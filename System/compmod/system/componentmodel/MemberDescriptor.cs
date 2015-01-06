@@ -262,7 +262,7 @@ namespace System.ComponentModel {
         public virtual string DisplayName {
             get {
                 DisplayNameAttribute displayNameAttr = Attributes[typeof(DisplayNameAttribute)] as DisplayNameAttribute;
-                if (displayNameAttr == null || displayNameAttr.IsDefaultAttribute()) {
+                if (displayNameAttr == null) {
                     return displayName;
                 }   
                 return displayNameAttr.DisplayName;
@@ -276,7 +276,7 @@ namespace System.ComponentModel {
         /// </devdoc>
         private void CheckAttributesValid() {
             if (attributesFiltered) {
-                if (metadataVersion != TypeDescriptor.MetadataVersion) {
+                if (metadataVersion != 0) {
                     attributesFilled = false;
                     attributesFiltered = false;
                     attributeCollection = null;
@@ -389,7 +389,7 @@ namespace System.ComponentModel {
                 Hashtable hash = new Hashtable(list.Count);
 
                 foreach (Attribute attr in list) {
-                    hash[attr.TypeId] = attr;
+                    hash[attr.GetHashCode()] = attr;
                 }
 
                 Attribute[] newAttributes = new Attribute[hash.Values.Count];
@@ -399,7 +399,7 @@ namespace System.ComponentModel {
                     attributes = newAttributes;
                     attributesFiltered = true;
                     attributesFilled = true;
-                    metadataVersion = TypeDescriptor.MetadataVersion;
+                    metadataVersion = 0;
                 }
             }
         }
@@ -425,9 +425,9 @@ namespace System.ComponentModel {
                 result = componentClass.GetMethod(name, args);
             }
             else {
-                result = componentClass.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null, args, null);
+                result = componentClass.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             }
-            if (result != null && !result.ReturnType.IsEquivalentTo(returnType)) {
+            if (result != null && !result.ReturnType.Equals(returnType)) {
                 result = null;
             }
             return result;
@@ -459,7 +459,7 @@ namespace System.ComponentModel {
                 throw new ArgumentNullException("instance");
             }
 
-            return TypeDescriptor.GetAssociation(type, instance);
+            throw new NotImplementedException("TypeDescriptor.GetAssociation not implemented");
         }
 
         /// <devdoc>
@@ -496,7 +496,7 @@ namespace System.ComponentModel {
                 throw new ArgumentNullException("component");
             }
 
-            return TypeDescriptor.GetAssociation(componentClass, component);
+            throw new NotImplementedException("TypeDescriptor.GetAssociation not implemented");
         }
     }
 }

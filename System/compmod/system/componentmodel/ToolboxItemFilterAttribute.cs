@@ -92,19 +92,6 @@ namespace System.ComponentModel {
             }
         }
 
-        /// <devdoc>
-        ///     The unique identifier for this attribute.  All ToolboxItemFilterAttributes with the same filter string
-        ///     are considered the same, so they return the same TypeId.
-        /// </devdoc>
-        public override object TypeId {
-            get {
-                if (typeId == null) {
-                    typeId = GetType().FullName + filterString;
-                }
-                return typeId;
-            }
-        }
-
         public override bool Equals(object obj) {
             if (obj == this) {
                 return true;
@@ -117,22 +104,6 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             // No need to hash on filter type as well; there shouldn't be that many duplicates.
             return filterString.GetHashCode();
-        }
-    
-        public override bool Match(object obj) {
-        
-            ToolboxItemFilterAttribute other = obj as ToolboxItemFilterAttribute;
-            if (other == null) {
-                return false;
-            }
-            
-            // different filter string kills a match immediately.
-            //
-            if (!other.FilterString.Equals(FilterString)) {
-                return false;
-            }
-            
-            return true;
         }
 
         public override string ToString() {

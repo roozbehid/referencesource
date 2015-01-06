@@ -109,9 +109,9 @@ namespace System.ComponentModel {
                         
                         if (tabClasses[i] == null) {
                             if (assemblyName != null) {
-                                Assembly a = Assembly.Load(assemblyName);
+                                Assembly a = Assembly.Load(new AssemblyName(assemblyName));
                                 if (a != null) {
-                                    tabClasses[i] = a.GetType(className, true);
+                                    tabClasses[i] = a.GetType(className);
                                 }
                             }
                             else {

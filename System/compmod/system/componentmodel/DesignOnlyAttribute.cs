@@ -66,13 +66,6 @@ namespace System.ComponentModel {
         /// </devdoc>
         public static readonly DesignOnlyAttribute Default = No;
 
-        /// <devdoc>
-        /// </devdoc>
-        /// <internalonly/>
-        public override bool IsDefaultAttribute() {
-            return IsDesignOnly == Default.IsDesignOnly;
-        }
-
         public override bool Equals(object obj) {
             if (obj == this) {
                 return true;

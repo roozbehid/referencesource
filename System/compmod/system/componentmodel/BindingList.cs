@@ -86,11 +86,11 @@ namespace System.ComponentModel
             get {
                 Type itemType = typeof(T);
 
-                if (itemType.IsPrimitive) {
+                if (itemType.GetTypeInfo().IsPrimitive) {
                     return true;
                 }
 
-                if (itemType.GetConstructor(BindingFlags.Public | BindingFlags.Instance | BindingFlags.CreateInstance, null, new Type[0], null) != null) {
+                if (itemType.GetConstructor(new Type[0]) != null) {
                     return true;
                 }
 
@@ -342,7 +342,7 @@ namespace System.ComponentModel
             if (newItem == null) {
 
                 Type type = typeof(T);                
-                newItem = SecurityUtils.SecureCreateInstance(type);
+                newItem = Activator.CreateInstance(type);
             }
 
             // Add item to end of list. Note: If event handler returned an item not of type T,
@@ -596,7 +596,7 @@ namespace System.ComponentModel
                         // Get the property descriptor
                         if (null == this.itemTypeProperties) {
                             // Get Shape
-                            itemTypeProperties = TypeDescriptor.GetProperties(typeof(T));
+                            itemTypeProperties = null;
                             Debug.Assert(itemTypeProperties != null);
                         }
 

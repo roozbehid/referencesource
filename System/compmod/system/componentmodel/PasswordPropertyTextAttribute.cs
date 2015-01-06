@@ -76,12 +76,5 @@ namespace System.ComponentModel {
         public override int GetHashCode() {
             return base.GetHashCode();
         }
-
-        /// <devdoc>
-        ///     Gets a value indicating whether this attribute is set to true by default.
-        /// </devdoc>
-        public override bool IsDefaultAttribute() {
-            return this.Equals(Default);
-        }
     }
 }

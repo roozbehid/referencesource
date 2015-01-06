@@ -167,7 +167,7 @@ namespace System.ComponentModel {
                         for (int i = 0; i < siteCount; i++) {
                             result[i] = sites[i].Component;
                         }
-                        components = new ComponentCollection(result);
+                        throw new NotSupportedException("ComponentCollection not supported");
 
                         // At each component add, if we don't yet have a filter, look for one.
                         // Components may add filters.
@@ -248,10 +248,10 @@ namespace System.ComponentModel {
                     if (s != null && s.Name != null 
                             && string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase) 
                             && s.Component != component) {
-                        InheritanceAttribute inheritanceAttribute = (InheritanceAttribute)TypeDescriptor.GetAttributes(s.Component)[typeof(InheritanceAttribute)];
-                        if(inheritanceAttribute.InheritanceLevel != InheritanceLevel.InheritedReadOnly) {
-                            throw new ArgumentException(SR.GetString(SR.DuplicateComponentName, name));
-                        }
+                        //InheritanceAttribute inheritanceAttribute = (InheritanceAttribute)TypeDescriptor.GetAttributes(s.Component)[typeof(InheritanceAttribute)];
+                        //if(inheritanceAttribute.InheritanceLevel != InheritanceLevel.InheritedReadOnly) {
+                        //    throw new ArgumentException(SR.GetString(SR.DuplicateComponentName, name));
+                        //}
                     }
                 }
             }

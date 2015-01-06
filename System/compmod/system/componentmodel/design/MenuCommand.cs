@@ -189,10 +189,7 @@ namespace System.ComponentModel.Design {
                 try {
                     execHandler(this, EventArgs.Empty);
                 }
-                catch (CheckoutException cxe) {
-                    if (cxe == CheckoutException.Canceled)
-                        return;
-                    
+                catch (Exception cxe) {
                     throw;
                 }
             }
