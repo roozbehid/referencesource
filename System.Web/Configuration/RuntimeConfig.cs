@@ -210,7 +210,8 @@ namespace System.Web.Configuration {
                 config = GetAppConfig();
                 success = true;
             }
-            catch {
+			catch (Exception ex) {
+				Console.WriteLine(ex.ToString());
             }
 
 
