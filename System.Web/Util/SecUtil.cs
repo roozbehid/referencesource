@@ -215,8 +215,8 @@ namespace System.Web.Util {
             return iValue;
         }
 
-#if !FEATURE_PAL //
         internal static void CheckSchemaVersion(ProviderBase provider, SqlConnection connection, string[] features, string version, ref int schemaVersionCheck) {
+#if !FEATURE_PAL //
             if (connection == null) {
                 throw new ArgumentNullException("connection");
             }
@@ -271,7 +271,7 @@ namespace System.Web.Util {
                     }
                 }
             }
-        }
 #endif // !FEATURE_PAL
+        }
     }
 }

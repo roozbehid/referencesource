@@ -381,7 +381,9 @@ namespace System.Web.Hosting {
                 appId = CreateSimpleAppID(virtualPath, physicalPath, null);
 
                 appHost = new SimpleApplicationHost(virtualPath, physicalPath);
+#if !FEATURE_PAL
             }
+#endif
 
             string precompTargetPhysicalDir = hostingParameters.PrecompilationTargetPhysicalDirectory;
             if (precompTargetPhysicalDir != null) {
