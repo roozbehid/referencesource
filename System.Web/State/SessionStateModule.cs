@@ -545,7 +545,7 @@ namespace System.Web.SessionState {
             // Session_OnStart for ASPCOMPAT pages has to be raised from an STA thread
             // 
             if (HttpRuntime.ApartmentThreading || _rqContext.InAspCompatMode) {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL does not enable COM
+#if !FEATURE_PAL // FEATURE_PAL does not enable COM
                 AspCompatApplicationStep.RaiseAspCompatEvent(
                     _rqContext,
                     _rqContext.ApplicationInstance,
@@ -1069,7 +1069,7 @@ namespace System.Web.SessionState {
         }
 
         void ChangeImpersonation(HttpContext context, bool timerThread) {
-#if !FEATURE_PAL && !MONO // FEATURE_PAL doesn't enable impersonation
+#if !FEATURE_PAL // FEATURE_PAL doesn't enable impersonation
             _rqChangeImpersonationRefCount++;
 
             if (_ignoreImpersonation) {
