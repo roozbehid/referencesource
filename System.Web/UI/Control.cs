@@ -965,11 +965,6 @@ namespace System.Web.UI {
         }
 
         internal XhtmlConformanceSection GetXhtmlConformanceSection() {
-
-			#if MONO
-			return new XhtmlConformanceSection();
-			#endif
-
             HttpContext context = Context;
             XhtmlConformanceSection xhtmlConformanceSection;
             if (context != null) {
@@ -2799,10 +2794,6 @@ namespace System.Web.UI {
         }
 
         internal bool CalculateEffectiveValidateRequest() {
-			#if MONO
-			return true;
-			#endif
-
             RuntimeConfig config = RuntimeConfig.GetConfig();
             HttpRuntimeSection runtimeSection = config.HttpRuntime;
             if (runtimeSection.RequestValidationMode >= VersionUtil.Framework45) {
