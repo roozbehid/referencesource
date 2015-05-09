@@ -1,3 +1,4 @@
+#if false
 //------------------------------------------------------------------------------
 // <copyright file="WebConfigurationHost.cs" company="Microsoft">
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
@@ -950,3 +951,4 @@ namespace System.Web.Configuration {
 #endif
     }
 }
+#endif
