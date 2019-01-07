@@ -34,8 +34,9 @@ namespace System.ComponentModel {
         ///       specified by the value
         ///       parameter.</para>
         /// </devdoc>
-        public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes) {
-            return TypeDescriptor.GetProperties(value, attributes);
+        public  PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes) {
+            //return TypeDescriptor.GetProperties(value, attributes);
+            return null;
         }
         
         /// <internalonly/>
